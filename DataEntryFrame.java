@@ -96,6 +96,14 @@ public class DataEntryFrame extends JFrame
 	private void setVisuals(FormData data)
 	{
 		// TODO: set the text fields and the signature as corresponding to the fields in FormData.
+		firstName.setText(data.getFirstName());
+		middleInitial.setText(data.getMiddleInitial()+"");
+		lastName.setText(data.getLastName());
+		displayName.setText(data.getDisplayName());
+		SSN.setText(data.getSSN());
+		phone.setText(data.getPhone());
+		email.setText(data.getEmail());
+		address.setText(data.getAddress());
 	}
 
 	/**
@@ -124,7 +132,17 @@ public class DataEntryFrame extends JFrame
 		this.add(formSelect);
 
 		// TODO: add in all form-fillable components:
-		JPanel formFill = new JPanel(/* TODO: add layout manager */);
+		JPanel formFill = new JPanel(new GridLayout(0,0)/* TODO: add layout manager */);
+		formFill.add(firstName);
+		formFill.add(middleInitial);
+		formFill.add(lastName);
+		formFill.add(displayName);
+		formFill.add(SSN);
+		formFill.add(displayName);
+		formFill.add(phone);
+		formFill.add(email);
+		formFill.add(address);
+		
 		// TODO: add to panel...
 		this.add(formFill);
 
@@ -164,13 +182,14 @@ public class DataEntryFrame extends JFrame
 
 			// TODO: use the JTextFields and the signature panel to set the values
 			// of the selected FormData object.
-
 			this.setVisuals(datalist.get(select));
 			DefaultComboBoxModel<String> newComboBoxModel = getComboBoxModel(datalist);
 			formSelect.setModel(newComboBoxModel);
 			formSelect.setSelectedIndex(select);
+			
 
 			// TODO: display an error message if setting the values failed. Else, display a success message.w
+			
 		});
 
 		JButton resetForm = new JButton("Reset");
