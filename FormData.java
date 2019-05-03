@@ -36,7 +36,8 @@ public class FormData implements Serializable
 	/**
 	 * User verification:
 	 */
-	private List<Point> signature;
+	//change back to private
+	public List<Point> signature;
 
 	/**
 	 * Set the fields in the formdata object. Emails must end with "@ou.edu". SSNs must be 9 digits long, and phone

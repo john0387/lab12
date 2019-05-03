@@ -5,6 +5,10 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -113,7 +117,7 @@ public class DataEntryFrame extends JFrame
 
 	public DataEntryFrame()
 	{
-		this.setLayout(new GridLayout(7, 1));
+		this.setLayout(new GridLayout(8, 1));
 
 		// Add initial form:
 		datalist.add(new FormData());
@@ -132,21 +136,36 @@ public class DataEntryFrame extends JFrame
 		this.add(formSelect);
 
 		// TODO: add in all form-fillable components:
-		JPanel formFill = new JPanel(new GridLayout(0,0)/* TODO: add layout manager */);
+		JPanel formFill = new JPanel(new GridLayout(4,2)/* TODO: add layout manager */);
+		formFill.add(firstNameInfo);
 		formFill.add(firstName);
+		
+		formFill.add(midddleInitialInfo);
 		formFill.add(middleInitial);
+		
+		formFill.add(lastNameInfo);
 		formFill.add(lastName);
+		
+		formFill.add(displayNameInfo);
 		formFill.add(displayName);
+		
+		formFill.add(SSNInfo);
 		formFill.add(SSN);
-		formFill.add(displayName);
+		
+		formFill.add(phoneInfo);
 		formFill.add(phone);
+		
+		formFill.add(emailInfo);
 		formFill.add(email);
+
+		formFill.add(addressInfo);
 		formFill.add(address);
 		
 		// TODO: add to panel...
 		this.add(formFill);
 
 		// Add in the signature panel:
+		List<Point> s = new ArrayList<Point>();
 		spanel.addMouseMotionListener(new MouseMotionListener()
 		{
 			@Override
@@ -155,12 +174,19 @@ public class DataEntryFrame extends JFrame
 			@Override
 			public void mouseDragged(MouseEvent e)
 			{
-				// TODO: add a point to the panel on drag and repaint.
+				// TODO: add a point to the panel on drag and repaint
+				//List<Point> s = new ArrayList<Point>();
+				Point P = new Point(e.getX(),e.getY());
+				datalist.get(formSelect.getSelectedIndex()).signature.add(P);
+				spanel.addPoint(P);
+				//Circle c = new Circle(spanel.radius);
+				//Ellipse2D.Double ell = new Ellipse2D.Double();
+				spanel.setSignature(datalist.get(formSelect.getSelectedIndex()).getSignature());
 			}
+			//s = new ArrayList<Point>();
 		});
 		this.add(signatureInfo);
 		this.add(spanel);
-
 		// Add in the form create, save, and reset panel:
 		JPanel formHandling = new JPanel(new GridLayout(1, 3));
 		JButton createForm = new JButton("New Form");
@@ -176,56 +202,74 @@ public class DataEntryFrame extends JFrame
 			this.setVisuals(datalist.get(select));
 		});
 
+		
 		JButton saveForm = new JButton("Save");
 		saveForm.addActionListener((e) -> {
 			int select = formSelect.getSelectedIndex();
 
 			// TODO: use the JTextFields and the signature panel to set the values
 			// of the selected FormData object.
+			String current = displayName.getText();
+			boolean succ = datalist.get(select).setValues(firstName.getText(), 
+					middleInitial.getText().charAt(0), lastName.getText(), displayName.getText(),
+					SSN.getText(), phone.getText(), email.getText(),address.getText(),spanel.getSignature());
 			this.setVisuals(datalist.get(select));
+			formSelect.addItem(datalist.get(select).getDisplayName());
 			DefaultComboBoxModel<String> newComboBoxModel = getComboBoxModel(datalist);
 			formSelect.setModel(newComboBoxModel);
-			formSelect.setSelectedIndex(select);
+			formSelect.setSelectedItem(current);
 			
-
 			// TODO: display an error message if setting the values failed. Else, display a success message.w
-			
+			if(succ==false) 
+			{
+				errorField.setText("Error, couldn't save values because one or more fields contains invalid content.");
+			}
+			else
+				errorField.setText("Saved successfully.");
 		});
 
+		
 		JButton resetForm = new JButton("Reset");
 		resetForm.addActionListener((e) -> {
 			int select = formSelect.getSelectedIndex();
 			// TODO: reset the values on the selected form data
+			datalist.get(select).reset();
 			this.setVisuals(datalist.get(select));
+			errorField.setText("No Errors");
 		});
 
 		// TODO: add buttons to panel and add to frame
-
+		formHandling.add(resetForm);
+		formHandling.add(saveForm);
+		formHandling.add(createForm);
+		this.add(formHandling);
+		
 		// Add in the error message field:
 		this.errorField.setEditable(false);
 		// TODO: add error field to frame
-
+		this.add(errorField);
+		
 		// Add in the import/export panel:
 		JButton importButton = new JButton("Import");
 
 		// TODO: Import from a file: you will import a list of FormData objects and should use this to replace
 		// the data in datalist.
 		importButton.addActionListener((e) -> {
-
+			
 			// TODO: Choose a file (hint, use JFileChooser):
 			// TODO: extract object from a file (hint, use file.getAbsolutePath()):
 			//		 You will use the file to replace the datalist object. I.e. you will be loading in a new
 			//		 list of formdata.
 			// TODO: display error message on fail, else display success message
-
+			
         	// Use this code snippet to reset visuals after importing:
-			/*
             int select = 0;
 			DefaultComboBoxModel<String> newComboBoxModel = getComboBoxModel(datalist);
 			formSelect.setModel(newComboBoxModel);
 			formSelect.setSelectedIndex(select);
 			this.setVisuals(datalist.get(select));
-			*/
+			
+			
 		});
 		JButton exportButton = new JButton("Export");
 		exportButton.addActionListener((e) -> {
@@ -236,7 +280,8 @@ public class DataEntryFrame extends JFrame
 		});
 
 		// TODO: add import/export to panel and add to frame
-
+		this.add(importButton);
+		this.add(exportButton);
 		// JFrame basics:
 		this.setTitle("Example Form Fillout");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
